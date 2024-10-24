@@ -1,11 +1,13 @@
+package tests;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 
 
-import com.github.javafaker.Faker;
 import io.restassured.http.ContentType;
+import models.LoginBodyModel;
 import org.junit.jupiter.api.Test;
 
 public class BookStoreTests {
@@ -35,10 +37,12 @@ public class BookStoreTests {
 
   @Test
   void bookStoreCreateUser() {
-   // Faker faker = new Faker();
-   // String userName = faker.name().firstName();
-   // String password = "An!!1234";
-    String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
+
+    //LoginBodyModel correctData = new LoginBodyModel();
+    //correctData.setName("Anna");
+    //correctData.setPassword("An!!1234");
+
+   String correctData = "{\"userName\": \"User5\", \"password\": \"An!!1234\"}";
     given()
         .body(correctData)
         .contentType(ContentType.JSON)
@@ -49,14 +53,12 @@ public class BookStoreTests {
         .log().status()
         .log().body()
         .statusCode(201)
-        .body("username", is("User4"));
+        .body("username", is("User5"));
   }
 
   @Test
   void existsCreateUser() {
-    // Faker faker = new Faker();
-    // String userName = faker.name().firstName();
-    // String password = "An!!1234";
+
     String correctData = "{\"userName\": \"User3\", \"password\": \"An!!1234\"}";
     given()
         .body(correctData)
@@ -70,5 +72,24 @@ public class BookStoreTests {
         .statusCode(406)
         .body("message", is("User exists!"));
   }
+  @Test
+  void successfulAuthTest() {
 
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setName("User5");
+    correctData.setPassword("An!!1234");
+
+    // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
+    given()
+        .body(correctData)
+        .contentType(ContentType.JSON)
+        .log().uri()
+        .when()
+        .post("https://demoqa.com/Account/v1/User")
+        .then()
+        .log().status()
+        .log().body()
+        .statusCode(201)
+        .body("username", is("User5"));
+  }
 }
