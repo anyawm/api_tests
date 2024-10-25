@@ -2,12 +2,13 @@ package tests;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 import io.restassured.http.ContentType;
-import models.LoginBodyModel;
+import models.lombok.LoginBodyModelLombok;
+import models.pojo.LoginBodyModel;
 import org.junit.jupiter.api.Test;
 
 public class BookStoreTests {
@@ -38,14 +39,15 @@ public class BookStoreTests {
   @Test
   void bookStoreCreateUser() {
 
-    //LoginBodyModel correctData = new LoginBodyModel();
-    //correctData.setName("Anna");
-    //correctData.setPassword("An!!1234");
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setUserName("User9");
+    correctData.setPassword("An!!1234");
 
-   String correctData = "{\"userName\": \"User5\", \"password\": \"An!!1234\"}";
+    // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
     given()
         .body(correctData)
         .contentType(ContentType.JSON)
+        .log().body()
         .log().uri()
         .when()
         .post("https://demoqa.com/Account/v1/User")
@@ -53,7 +55,72 @@ public class BookStoreTests {
         .log().status()
         .log().body()
         .statusCode(201)
-        .body("username", is("User5"));
+        .body("username", is("User9"));
+  }
+
+  @Test
+  void bookStoreCreateUserLombok() {
+
+    LoginBodyModelLombok correctData = new LoginBodyModelLombok();
+    correctData.setUserName("User11");
+    correctData.setPassword("An!!1234");
+
+    given()
+        .body(correctData)
+        .contentType(ContentType.JSON)
+        .log().body()
+        .log().uri()
+        .log().headers()
+        .when()
+        .post("https://demoqa.com/Account/v1/User")
+        .then()
+        .log().status()
+        .log().body()
+        .statusCode(201)
+        .body("username", is("User11"));
+  }
+
+  @Test
+  void bookStoreCreateUserWithAssert() {
+
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setUserName("User10");
+    correctData.setPassword("An!!1234");
+
+    LoginBodyModel response = given()
+        .body(correctData)
+        .contentType(ContentType.JSON)
+        .log().body()
+        .log().uri()
+        .when()
+        .post("https://demoqa.com/Account/v1/User")
+        .then()
+        .log().status()
+        .log().body()
+        .statusCode(201)
+        .extract().as(LoginBodyModel.class);
+    assertEquals("User10", response.getUserName());
+  }
+
+  @Test
+  void successfulAuthTest() {
+
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setUserName("User9");
+    correctData.setPassword("An!!1234");
+
+    // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
+    given()
+        .body(correctData)
+        .contentType(ContentType.JSON)
+        .log().body()
+        .log().uri()
+        .when()
+        .post("https://demoqa.com/Account/v1/Authorized")
+        .then()
+        .log().status()
+        .log().body()
+        .statusCode(200);
   }
 
   @Test
@@ -72,24 +139,5 @@ public class BookStoreTests {
         .statusCode(406)
         .body("message", is("User exists!"));
   }
-  @Test
-  void successfulAuthTest() {
 
-    LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setName("User5");
-    correctData.setPassword("An!!1234");
-
-    // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
-    given()
-        .body(correctData)
-        .contentType(ContentType.JSON)
-        .log().uri()
-        .when()
-        .post("https://demoqa.com/Account/v1/User")
-        .then()
-        .log().status()
-        .log().body()
-        .statusCode(201)
-        .body("username", is("User5"));
-  }
 }
