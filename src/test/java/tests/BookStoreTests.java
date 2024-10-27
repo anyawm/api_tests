@@ -4,14 +4,27 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.LoginSpec.existUserResponseSpec;
+import static specs.LoginSpec.loginRequestSpec;
+import static specs.LoginSpec.loginResponseSpec;
+import static specs.LoginSpec.missingPasswordResponseSpec;
 
 
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import models.lombok.CreateUserResponseModel;
 import models.lombok.LoginBodyModelLombok;
+import models.lombok.ErrorModel;
 import models.pojo.LoginBodyModel;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class BookStoreTests {
+
+  @BeforeAll
+  public static void setUP() {
+    RestAssured.baseURI = "https://demoqa.com";
+  }
 
   @Test
   void getBooks() {
@@ -66,12 +79,12 @@ public class BookStoreTests {
     correctData.setPassword("An!!1234");
 
     given()
-        .body(correctData)
-        .contentType(ContentType.JSON)
         .log().body()
         .log().uri()
         .log().headers()
-        .when()
+        .body(correctData)
+        .contentType(ContentType.JSON)
+                .when()
         .post("https://demoqa.com/Account/v1/User")
         .then()
         .log().status()
@@ -81,35 +94,72 @@ public class BookStoreTests {
   }
 
   @Test
-  void bookStoreCreateUserWithAssert() {
+  void bookStoreCreateUserSpec() {
 
-    LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User10");
+    LoginBodyModelLombok correctData = new LoginBodyModelLombok();
+    correctData.setUserName("User11");
     correctData.setPassword("An!!1234");
 
-    LoginBodyModel response = given()
+    given(loginRequestSpec)
+        .body(correctData)
+
+    .when()
+        .post("https://demoqa.com/Account/v1/User")
+    .then()
+        .spec(loginResponseSpec)
+        .body("username", is("User11"));
+  }
+
+  @Test
+  void missingPasswordCreateUserSpec() {
+
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setUserName("User11");
+
+    ErrorModel response = given(loginRequestSpec)
+        .body(correctData)
+
+    .when()
+        .post("https://demoqa.com/Account/v1/User")
+    .then()
+        .spec(missingPasswordResponseSpec)
+        .extract().as(ErrorModel.class);
+    assertEquals("1200", response.getCode());
+    assertEquals("UserName and Password required.", response.getMessage());
+  }
+
+  @Test
+  void bookStoreCreateUserWithAssert() { //не работает
+
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setUserName("User13");
+    correctData.setPassword("An!!1234");
+
+    CreateUserResponseModel response = given()
         .body(correctData)
         .contentType(ContentType.JSON)
         .log().body()
         .log().uri()
-        .when()
+   .when()
         .post("https://demoqa.com/Account/v1/User")
-        .then()
+  .then()
         .log().status()
         .log().body()
         .statusCode(201)
-        .extract().as(LoginBodyModel.class);
-    assertEquals("User10", response.getUserName());
+        .extract().as(CreateUserResponseModel.class);
+    assertEquals("User13", response.getUsername());
+    assertEquals("9445f494-f0f9-43fb-b1b8-cf5eb1be715f", response.getUserID());
+    assertEquals("", response.getBooks());
   }
+
 
   @Test
   void successfulAuthTest() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User9");
+    correctData.setUserName("User9"); //надо добавить генерацию
     correctData.setPassword("An!!1234");
 
-    // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
     given()
         .body(correctData)
         .contentType(ContentType.JSON)
@@ -125,19 +175,20 @@ public class BookStoreTests {
 
   @Test
   void existsCreateUser() {
+    LoginBodyModel correctData = new LoginBodyModel();
+    correctData.setUserName("User9");
+    correctData.setPassword("An!!1234");
 
-    String correctData = "{\"userName\": \"User3\", \"password\": \"An!!1234\"}";
-    given()
+    ErrorModel response = given(loginRequestSpec)
         .body(correctData)
-        .contentType(ContentType.JSON)
-        .log().uri()
+
         .when()
         .post("https://demoqa.com/Account/v1/User")
         .then()
-        .log().status()
-        .log().body()
-        .statusCode(406)
-        .body("message", is("User exists!"));
+        .spec(existUserResponseSpec)
+        .extract().as(ErrorModel.class);
+    assertEquals("1204", response.getCode());
+    assertEquals("User exists!", response.getMessage());
   }
 
 }
