@@ -39,8 +39,6 @@ public static ResponseSpecification loginResponseSpec = new ResponseSpecBuilder(
 
   public static ResponseSpecification missingPasswordResponseSpec = new ResponseSpecBuilder()
       .expectStatusCode(400)
-      .log(STATUS)
-      .log(BODY)
       .build();
 
   public static ResponseSpecification existUserResponseSpec = new ResponseSpecBuilder()
