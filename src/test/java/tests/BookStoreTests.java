@@ -12,6 +12,7 @@ import static specs.LoginSpec.loginResponseSpec;
 import static specs.LoginSpec.missingPasswordResponseSpec;
 
 
+import com.github.javafaker.Faker;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
@@ -28,7 +29,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class BookStoreTests {
+public class BookStoreTests extends TestBase {
 
   @BeforeAll
   public static void setUP() {
@@ -41,14 +42,14 @@ public class BookStoreTests {
         .log(LogDetail.STATUS)
         .build();
 
-  }
+      }
 
   @Test
   @DisplayName("Создание юзера с pojo моделью")
   void bookStoreCreateUser() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User9");
+    correctData.setUserName(userNameGenerate);
     correctData.setPassword("An!!1234");
 
     // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
@@ -63,7 +64,7 @@ public class BookStoreTests {
         .log().status()
         .log().body()
         .statusCode(201)
-        .body("username", is("User9"));
+        .body("username", is(userNameGenerate));
   }
 
   @Test
@@ -71,8 +72,9 @@ public class BookStoreTests {
   void bookStoreCreateUserLombok() {
 
     LoginBodyModelLombok correctData = new LoginBodyModelLombok();
-    correctData.setUserName("User15");
+    correctData.setUserName(userNameGenerate);
     correctData.setPassword("An!!1234");
+    String MyUserName = userNameGenerate;
 
     given()
         .log().body()
@@ -86,7 +88,7 @@ public class BookStoreTests {
         .log().status()
         .log().body()
         .statusCode(201)
-        .body("username", is("User15"));
+        .body("username", is(MyUserName));
   }
 
 
@@ -114,7 +116,7 @@ public class BookStoreTests {
   void missingPasswordCreateUserSpec() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User11");
+    correctData.setUserName(userNameGenerate);
 
     ErrorModel response = given(loginRequestSpec)
         .body(correctData)
@@ -132,9 +134,11 @@ public class BookStoreTests {
   @DisplayName("Создание юзера со spec")
   void bookStoreCreateUserSpec() {
 
+
     LoginBodyModelLombok correctData = new LoginBodyModelLombok();
-    correctData.setUserName("User19");
+    correctData.setUserName(userNameGenerate);
     correctData.setPassword("An!!1234");
+
 
     given(loginRequestSpec)
         .body(correctData)
@@ -143,14 +147,15 @@ public class BookStoreTests {
         .post("https://demoqa.com/Account/v1/User")
         .then()
         .spec(loginResponseSpec)
-        .body("username", is("User19"));
+        .body("username", is(userNameGenerate));
   }
 
   @Test
   void successfulAuthTest() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User19"); //надо добавить генерацию
+    correctData.setUserName("User12"); // как сделать чтобы я сгенерировала имя и оно могло использоваться тут
+    // я сохраняю в тесте на создание в переменную, но не получается ее больше нигде использовать
     correctData.setPassword("An!!1234");
 
     given()
@@ -168,6 +173,7 @@ public class BookStoreTests {
 
   @Test
   @DisplayName("Создание юзера с моделями на request и response + spec / не работает")
+  // как тут проверять данные, которые генерируются на бэке?
   void bookStoreCreateUserWithAssert() {
 
     LoginBodyModel correctData = new LoginBodyModel();
