@@ -47,4 +47,10 @@ public static ResponseSpecification loginResponseSpec = new ResponseSpecBuilder(
       .log(BODY)
       .build();
 
+  public static ResponseSpecification createResponseSpec = new ResponseSpecBuilder()
+      .expectStatusCode(201)
+      .log(STATUS)
+      .log(BODY)
+      .build();
+
 }

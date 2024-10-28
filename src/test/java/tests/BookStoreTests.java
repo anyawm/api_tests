@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.LoginSpec.createResponseSpec;
 import static specs.LoginSpec.existUserResponseSpec;
 import static specs.LoginSpec.loginRequestSpec;
 import static specs.LoginSpec.loginResponseSpec;
@@ -29,7 +30,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class BookStoreTests extends TestBase {
+public class BookStoreTests {
+
+  static String GeneratedUser;
 
   @BeforeAll
   public static void setUP() {
@@ -42,14 +45,17 @@ public class BookStoreTests extends TestBase {
         .log(LogDetail.STATUS)
         .build();
 
+    Faker faker = new Faker();
+    GeneratedUser = faker.name().firstName();
       }
+
 
   @Test
   @DisplayName("Создание юзера с pojo моделью")
   void bookStoreCreateUser() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName(userNameGenerate);
+    correctData.setUserName(GeneratedUser);
     correctData.setPassword("An!!1234");
 
     // String correctData = "{\"userName\": \"User4\", \"password\": \"An!!1234\"}";
@@ -64,7 +70,7 @@ public class BookStoreTests extends TestBase {
         .log().status()
         .log().body()
         .statusCode(201)
-        .body("username", is(userNameGenerate));
+        .body("username", is(GeneratedUser));
   }
 
   @Test
@@ -72,9 +78,8 @@ public class BookStoreTests extends TestBase {
   void bookStoreCreateUserLombok() {
 
     LoginBodyModelLombok correctData = new LoginBodyModelLombok();
-    correctData.setUserName(userNameGenerate);
+    correctData.setUserName(GeneratedUser);
     correctData.setPassword("An!!1234");
-    String MyUserName = userNameGenerate;
 
     given()
         .log().body()
@@ -88,7 +93,7 @@ public class BookStoreTests extends TestBase {
         .log().status()
         .log().body()
         .statusCode(201)
-        .body("username", is(MyUserName));
+        .body("username", is(GeneratedUser));
   }
 
 
@@ -116,7 +121,7 @@ public class BookStoreTests extends TestBase {
   void missingPasswordCreateUserSpec() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName(userNameGenerate);
+    correctData.setUserName(GeneratedUser);
 
     ErrorModel response = given(loginRequestSpec)
         .body(correctData)
@@ -136,7 +141,7 @@ public class BookStoreTests extends TestBase {
 
 
     LoginBodyModelLombok correctData = new LoginBodyModelLombok();
-    correctData.setUserName(userNameGenerate);
+    correctData.setUserName(GeneratedUser);
     correctData.setPassword("An!!1234");
 
 
@@ -146,16 +151,15 @@ public class BookStoreTests extends TestBase {
         .when()
         .post("https://demoqa.com/Account/v1/User")
         .then()
-        .spec(loginResponseSpec)
-        .body("username", is(userNameGenerate));
+        .spec(createResponseSpec)
+        .body("username", is(GeneratedUser));
   }
 
   @Test
   void successfulAuthTest() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User12"); // как сделать чтобы я сгенерировала имя и оно могло использоваться тут
-    // я сохраняю в тесте на создание в переменную, но не получается ее больше нигде использовать
+    correctData.setUserName(GeneratedUser); // я сдаюсь
     correctData.setPassword("An!!1234");
 
     given()
@@ -173,11 +177,10 @@ public class BookStoreTests extends TestBase {
 
   @Test
   @DisplayName("Создание юзера с моделями на request и response + spec / не работает")
-  // как тут проверять данные, которые генерируются на бэке?
   void bookStoreCreateUserWithAssert() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName("User19");
+    correctData.setUserName("User26");
     correctData.setPassword("An!!1234");
 
     CreateUserResponseModel response = given()
@@ -192,9 +195,8 @@ public class BookStoreTests extends TestBase {
         .log().body()
         .statusCode(201)
         .extract().as(CreateUserResponseModel.class);
-    assertEquals("User19", response.getUsername());
-    assertEquals("939679bd-0a35-4178-bf81-0bab50c00623", response.getUserID());
-    assertEquals("", response.getBooks());
+    assertEquals("User26", response.getUsername());
+
   }
 
   @Test
