@@ -4,25 +4,42 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 import com.github.javafaker.Faker;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import models.pojo.LoginBodyModel;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class Example {
-  Faker faker = new Faker();
-  String userNameGenerate = faker.name().firstName();
+public class CreateAndEnterTest {
+  static String GeneratedUser;
 
-  public String GeneratedUser;
+  @BeforeAll
+  public static void setUP() {
+    RestAssured.baseURI = "https://demoqa.com";
+    RestAssured.requestSpecification = new RequestSpecBuilder()
+        .log(LogDetail.ALL)
+        .build();
+    RestAssured.responseSpecification = new ResponseSpecBuilder()
+        .log(LogDetail.BODY)
+        .log(LogDetail.STATUS)
+        .build();
+
+    Faker faker = new Faker();
+    GeneratedUser = faker.name().firstName();
+  }
+
 
   @Test
   @DisplayName("Создание юзера с pojo моделью")
   void bookStoreCreateUser() {
 
     LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName(userNameGenerate);
+    correctData.setUserName(GeneratedUser);
     correctData.setPassword("An!!1234");
-    GeneratedUser = userNameGenerate; //добавила в переменную для последующего использования
 
     given()
         .body(correctData)
