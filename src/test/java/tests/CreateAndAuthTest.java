@@ -1,6 +1,7 @@
 package tests;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.registerParser;
 import static org.hamcrest.Matchers.is;
 
 import com.github.javafaker.Faker;
@@ -9,22 +10,18 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import java.util.ArrayList;
 import models.pojo.LoginBodyModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
-@TestMethodOrder(OrderAnnotation.class)
-
-public class CreateAndEnterTest {
+public class CreateAndAuthTest {
 
   static String GeneratedUser;
 
   @BeforeAll
-  public static void setUP() {
+  public static void setUp() {
     RestAssured.baseURI = "https://demoqa.com";
     RestAssured.requestSpecification = new RequestSpecBuilder()
         .log(LogDetail.ALL)
@@ -38,49 +35,39 @@ public class CreateAndEnterTest {
     GeneratedUser = faker.name().firstName();
   }
 
-
   @Test
-  @Order(1)
-  @DisplayName("Создание юзера с pojo моделью")
-  void bookStoreCreateUser() {
-
+  @DisplayName("Создание и авторизация юзера с pojo моделью")
+  void createUserAndAuthenticate() {
     LoginBodyModel correctData = new LoginBodyModel();
     correctData.setUserName(GeneratedUser);
     correctData.setPassword("An!!1234");
 
+    // Создание пользователя
     given()
         .body(correctData)
         .contentType(ContentType.JSON)
         .log().body()
         .log().uri()
         .when()
-        .post("https://demoqa.com/Account/v1/User")
+        .post("/Account/v1/User")
         .then()
         .log().status()
         .log().body()
         .statusCode(201)
         .body("username", is(GeneratedUser));
-  }
 
-  @Test
-  @Order(2)
-  void successfulAuthTest() {
-
-    LoginBodyModel correctData = new LoginBodyModel();
-    correctData.setUserName(GeneratedUser);
-    correctData.setPassword("An!!1234");
-
+    // Авторизация пользователя
     given()
         .body(correctData)
         .contentType(ContentType.JSON)
         .log().body()
         .log().uri()
         .when()
-        .post("https://demoqa.com/Account/v1/Authorized")
+        .post("/Account/v1/Authorized")
         .then()
         .log().status()
         .log().body()
         .statusCode(200);
   }
-
 }
+
