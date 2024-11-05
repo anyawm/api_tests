@@ -19,24 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 @TestMethodOrder(OrderAnnotation.class)
 
-public class CreateAndEnterTest {
-
-  static String GeneratedUser;
-
-  @BeforeAll
-  public static void setUP() {
-    RestAssured.baseURI = "https://demoqa.com";
-    RestAssured.requestSpecification = new RequestSpecBuilder()
-        .log(LogDetail.ALL)
-        .build();
-    RestAssured.responseSpecification = new ResponseSpecBuilder()
-        .log(LogDetail.BODY)
-        .log(LogDetail.STATUS)
-        .build();
-
-    Faker faker = new Faker();
-    GeneratedUser = faker.name().firstName();
-  }
+public class CreateAndEnterTest extends TestBase {
 
 
   @Test

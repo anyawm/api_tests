@@ -16,24 +16,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class CreateAndAuthTest {
+public class CreateAndAuthTest extends TestBase {
 
-  static String GeneratedUser;
 
-  @BeforeAll
-  public static void setUp() {
-    RestAssured.baseURI = "https://demoqa.com";
-    RestAssured.requestSpecification = new RequestSpecBuilder()
-        .log(LogDetail.ALL)
-        .build();
-    RestAssured.responseSpecification = new ResponseSpecBuilder()
-        .log(LogDetail.BODY)
-        .log(LogDetail.STATUS)
-        .build();
-
-    Faker faker = new Faker();
-    GeneratedUser = faker.name().firstName();
-  }
 
   @Test
   @DisplayName("Создание и авторизация юзера с pojo моделью")
