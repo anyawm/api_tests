@@ -5,21 +5,11 @@ import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.filter.log.LogDetail.STATUS;
 
 import io.restassured.builder.ResponseSpecBuilder;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
-import io.restassured.matcher.DetailedCookieMatcher;
-import io.restassured.parsing.Parser;
-import io.restassured.response.Response;
-import io.restassured.specification.Argument;
-import io.restassured.specification.RequestSender;
+
 import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.ResponseLogSpecification;
 import io.restassured.specification.ResponseSpecification;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import org.hamcrest.Matcher;
+
 
 public class LoginSpec {
 

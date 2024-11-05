@@ -9,15 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static specs.LoginSpec.createResponseSpec;
 import static specs.LoginSpec.existUserResponseSpec;
 import static specs.LoginSpec.loginRequestSpec;
-import static specs.LoginSpec.loginResponseSpec;
 import static specs.LoginSpec.missingPasswordResponseSpec;
 
 
-import com.github.javafaker.Faker;
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.builder.ResponseSpecBuilder;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
@@ -26,7 +20,6 @@ import models.lombok.CreateUserResponseModel;
 import models.lombok.LoginBodyModelLombok;
 import models.lombok.ErrorModel;
 import models.pojo.LoginBodyModel;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

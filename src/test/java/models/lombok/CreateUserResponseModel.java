@@ -1,6 +1,5 @@
 package models.lombok;
 
-import java.util.Arrays;
 import lombok.Data;
 
 @Data
